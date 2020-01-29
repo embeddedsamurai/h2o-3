@@ -30,28 +30,27 @@ def buildModelCheckStdCoeffs(training_fileName, family):
     enumCols = Y/2
     if family == 'binomial' or family == 'multinomial':
         training_data[Y] = training_data[Y].asfactor()  #
-    for ind in range(enumCols): # first half of the columns are enums
+    for ind in range(int(enumCols)): # first half of the columns are enums
         training_data[ind] = training_data[ind].asfactor()
     model1 = H2OGeneralizedLinearEstimator(family=family, standardize=True)
     model1.train(training_frame=training_data, x=x, y=Y)
     stdCoeff1 = model1.coef_norm()
     
     # standardize numerical columns here
-    for ind in range(enumCols, Y): # change the numerical columns to have mean 0 and std 1
+    for ind in range(int(enumCols), Y): # change the numerical columns to have mean 0 and std 1
         aver = training_data[ind].mean()
         sigma = 1.0/math.sqrt(training_data[ind].var())
         training_data[ind] = (training_data[ind]-aver)*sigma
 
     model2 = H2OGeneralizedLinearEstimator(family=family, standardize=False)
     model2.train(training_frame=training_data, x=x, y=Y)
-    #coeff2 = model2.coef_norm() # this will crash before Zuzana fix, please use this one after your fix.
-    coeff2 = model2.coef()  # Zuzana: remove this one and use the above after you are done with your fix.
+    coeff2 = model2.coef_norm()
 
     if family == 'multinomial': # special treatment, it contains a dict of dict
         assert len(stdCoeff1) == len(coeff2), "Coefficient dictionary lengths are different.  One has length {0} while" \
                                               " the other one has length {1}.".format(len(stdCoeff1), len(coeff2))
         for name in stdCoeff1.keys():
-            pyunit_utils.equal_two_dicts(stdCoeff1[name], coeff2[name[4:]])
+            pyunit_utils.equal_two_dicts(stdCoeff1[name], coeff2[name])
     else:
         pyunit_utils.equal_two_dicts(stdCoeff1, stdCoeff1)
 
