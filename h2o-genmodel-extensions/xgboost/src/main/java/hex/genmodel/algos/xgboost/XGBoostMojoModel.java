@@ -70,8 +70,8 @@ public abstract class XGBoostMojoModel extends MojoModel implements SharedTreeGr
   public void postReadInit() {}
 
   @Override
-  public boolean hasOffset() {
-    return _hasOffset;
+  public OffsetRequirement requiresOffset() {
+    return OffsetRequirement.valueOf(_hasOffset);
   }
 
   @Override

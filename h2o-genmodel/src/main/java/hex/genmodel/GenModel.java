@@ -14,6 +14,17 @@ import java.util.List;
  * This is a helper class to support Java generated models.
  */
 public abstract class GenModel implements IGenModel, IGeneratedModel, Serializable {
+  
+  public enum OffsetRequirement {
+    AUTO, // if offset arg != null use predict with offset
+    YES, // offset is required for predicting
+    NO; // offset is not supported for predicting
+
+    public static OffsetRequirement valueOf(boolean required) {
+      return required ? YES : NO;
+    }
+
+  }
 
   /** Column names; last is response for supervised models */
   public final String[] _names;
@@ -44,8 +55,8 @@ public abstract class GenModel implements IGenModel, IGeneratedModel, Serializab
     this(names, domains, null);
   }
 
-  public boolean hasOffset() {
-    return false;
+  public OffsetRequirement requiresOffset() {
+    return OffsetRequirement.AUTO;
   }
 
   //--------------------------------------------------------------------------------------------------------------------

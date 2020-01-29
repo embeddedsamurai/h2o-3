@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
+import static hex.genmodel.GenModel.OffsetRequirement.AUTO;
+import static hex.genmodel.GenModel.OffsetRequirement.YES;
+
 /**
  * An easy-to-use prediction wrapper for generated models.  Instantiate as follows.  The following two are equivalent.
  *
@@ -853,12 +856,13 @@ public class EasyPredictModelWrapper implements Serializable {
   protected double[] predict(RowData data, double offset, double[] preds) throws PredictException {
     double[] rawData = nanArray(m.nfeatures());
     rawData = fillRawData(data, rawData);
-    if (m.hasOffset() || offset != 0) {
+    GenModel.OffsetRequirement offsetRequired = m.requiresOffset();
+    if ((offsetRequired == AUTO && offset != 0) || offsetRequired == YES) {
       preds = m.score0(rawData, offset, preds);
-    }
-    else {
+    } else {
       preds = m.score0(rawData, preds);
     }
+    
     return preds;
   }
 
