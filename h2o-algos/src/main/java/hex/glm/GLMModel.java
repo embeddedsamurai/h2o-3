@@ -1356,9 +1356,9 @@ public class GLMModel extends Model<GLMModel,GLMModel.GLMParameters,GLMModel.GLM
   
   public HashMap<String,Double> standardizedCoefficients(){
     HashMap<String, Double> res = new HashMap<>();
-    final double [] b = dinfo().denormalizeBeta(beta(), _parms._standardize);
-    if(b == null) return res;
     if(_parms._family == Family.multinomial || _parms._family == Family.ordinal){
+      double [] b = ArrayUtils.flat(this._output.getNormBetaMultinomial());
+      if(b == null) return res;
       String [] responseDomain = _output._domains[_output._domains.length-1];
       int len = b.length/_output.nclasses();
       assert b.length == len*_output.nclasses();
@@ -1367,8 +1367,11 @@ public class GLMModel extends Model<GLMModel,GLMModel.GLMParameters,GLMModel.GLM
         for (int i = 0; i < len; ++i)
           res.put(prefix + _output._coefficient_names[i], b[c*len+i]);
       }
-    } else for (int i = 0; i < b.length; ++i)
-      res.put(_output._coefficient_names[i], b[i]);
+    } else {
+      double [] b = this._output.getNormBeta();
+      for (int i = 0; i < b.length; ++i)
+        res.put(_output._coefficient_names[i], b[i]);
+    }
     return res;
   }
   

@@ -174,10 +174,9 @@ public class GLMTest  extends TestUtil {
       } else {
         assert TestUtil.equalTwoArrays(glm._output.getNormBeta(), glmS._output.getNormBeta(), 1e-6);
       }
-      // Zuzana:  this is for you.  Right now it does not work.
- /*     HashMap<String, Double> coeff1 = glm.standardized_coefficients();
-       HashMap<String, Double> coeff2 = glmS.standardized_coefficients();
-       assert TestUtil.equalTwoHashMaps(coeff1, coeff2, 1e-6); */
+      HashMap<String, Double> coeff1 = glm.standardizedCoefficients();
+      HashMap<String, Double> coeff2 = glmS.standardizedCoefficients();
+      assert TestUtil.equalTwoHashMaps(coeff1, coeff2, 1e-6); 
     } finally {
       Scope.exit();
     }
